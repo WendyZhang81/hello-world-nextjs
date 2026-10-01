@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
 export default async function JokesPage() {
   const { data: jokes, error } = await supabase
@@ -9,7 +10,16 @@ export default async function JokesPage() {
   if (error) {
     return (
       <main className="max-w-3xl mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-4">Joke List</h1>
+        <Link
+          href="/"
+          className="inline-block mb-6 border rounded-lg px-4 py-2 hover:bg-gray-100"
+        >
+          ← Back to Home
+        </Link>
+
+        <h1 className="text-3xl font-bold mb-4">
+          Joke List
+        </h1>
 
         <p className="text-red-500">
           Error loading jokes: {error.message}
@@ -20,6 +30,13 @@ export default async function JokesPage() {
 
   return (
     <main className="max-w-3xl mx-auto p-8">
+      <Link
+        href="/"
+        className="inline-block mb-6 border rounded-lg px-4 py-2 hover:bg-gray-100"
+      >
+        ← Back to Home
+      </Link>
+
       <h1 className="text-3xl font-bold mb-2">
         Joke List
       </h1>

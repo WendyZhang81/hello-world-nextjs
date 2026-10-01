@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ProfilePage() {
@@ -13,8 +14,8 @@ export default function ProfilePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [uploading, setUploading] = useState(false);
 
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -23,7 +24,7 @@ export default function ProfilePage() {
     const loadProfile = async () => {
       const supabase = createClient();
 
-      // 1. Check whether the user is logged in
+      // Check whether the user is logged in
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -36,7 +37,7 @@ export default function ProfilePage() {
       setUserId(user.id);
       setEmail(user.email ?? "");
 
-      // 2. Get the user's profile row
+      // Load profile information
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("first_name, last_name, avatar_url")
@@ -59,35 +60,41 @@ export default function ProfilePage() {
     loadProfile();
   }, [router]);
 
-const handleSave = async () => {
-  const supabase = createClient();
+  const handleSave = async () => {
+    const supabase = createClient();
 
-  setSaving(true);
-  setMessage("");
+    setSaving(true);
+    setMessage("");
 
-  const { data, error } = await supabase
-    .from("profiles")
-    .upsert({
-      id: userId,
-      first_name: firstName,
-      last_name: lastName,
-    })
-    .select("id, first_name, last_name")
-    .single();
+    const { data, error } = await supabase
+      .from("profiles")
+      .upsert({
+        id: userId,
+        first_name: firstName,
+        last_name: lastName,
+      })
+      .select("id, first_name, last_name")
+      .single();
 
-  console.log("Saved profile:", data);
+    console.log("Saved profile:", data);
 
-  if (error) {
-    console.error("Profile update error:", error);
-    setMessage(`Error: ${error.message}`);
-  } else {
-    setFirstName(data.first_name ?? "");
-    setLastName(data.last_name ?? "");
-    setMessage("Profile saved successfully!");
-  }
+    if (error) {
+      console.error("Profile update error:", error);
+      setMessage(`Error: ${error.message}`);
+    } else {
+      setFirstName(data.first_name ?? "");
+      setLastName(data.last_name ?? "");
 
-  setSaving(false);
-};
+      setMessage("Profile saved successfully!");
+
+      // Move to Members Area after saving
+      setTimeout(() => {
+        router.push("/members");
+      }, 1000);
+    }
+
+    setSaving(false);
+  };
 
   const handleAvatarUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -111,6 +118,7 @@ const handleSave = async () => {
     const fileExtension = file.name.split(".").pop();
     const filePath = `${userId}/${Date.now()}.${fileExtension}`;
 
+    // Upload image to Supabase Storage
     const { error: uploadError } = await supabase.storage
       .from("avatars")
       .upload(filePath, file);
@@ -122,12 +130,12 @@ const handleSave = async () => {
       return;
     }
 
+    // Get the public image URL
     const {
       data: { publicUrl },
-    } = supabase.storage
-      .from("avatars")
-      .getPublicUrl(filePath);
+    } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
+    // Save image URL to profiles table
     const { error: profileError } = await supabase
       .from("profiles")
       .update({
@@ -160,6 +168,15 @@ const handleSave = async () => {
   return (
     <main className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md border rounded-xl p-8 shadow-sm">
+        {/* Home */}
+        <Link
+          href="/"
+          className="inline-block mb-6 text-sm hover:underline"
+        >
+          ← Home
+        </Link>
+
+        {/* Header */}
         <h1 className="text-3xl font-bold mb-2">
           Profile
         </h1>
@@ -168,8 +185,11 @@ const handleSave = async () => {
           {email}
         </p>
 
+        {/* Profile Photo */}
         <div className="mb-6">
-          <p className="font-medium mb-3">Profile Photo</p>
+          <p className="font-medium mb-3">
+            Profile Photo
+          </p>
 
           {avatarUrl ? (
             <div
@@ -184,20 +204,31 @@ const handleSave = async () => {
             </div>
           )}
 
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleAvatarUpload}
-            disabled={uploading}
-          />
+          {/* Custom English upload button */}
+          <label className="inline-block">
+            <span className="inline-block border rounded-lg px-4 py-2 cursor-pointer hover:bg-gray-100">
+              {uploading
+                ? "Uploading..."
+                : avatarUrl
+                ? "Change Photo"
+                : "Choose Photo"}
+            </span>
 
-          {uploading && (
-            <p className="text-sm text-gray-600 mt-2">
-              Uploading...
-            </p>
-          )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+          </label>
+
+          <p className="text-xs text-gray-500 mt-2">
+            JPG, PNG, or other image formats.
+          </p>
         </div>
 
+        {/* Incomplete profile message */}
         {profileIncomplete && (
           <div className="border rounded-lg p-4 mb-6">
             <p className="font-semibold">
@@ -210,6 +241,7 @@ const handleSave = async () => {
           </div>
         )}
 
+        {/* First Name */}
         <div className="mb-4">
           <label className="block font-medium mb-2">
             First Name
@@ -223,6 +255,7 @@ const handleSave = async () => {
           />
         </div>
 
+        {/* Last Name */}
         <div className="mb-6">
           <label className="block font-medium mb-2">
             Last Name
@@ -236,14 +269,16 @@ const handleSave = async () => {
           />
         </div>
 
+        {/* Save */}
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full border rounded-lg px-4 py-3 hover:bg-gray-100"
+          className="w-full border rounded-lg px-4 py-3 hover:bg-gray-100 disabled:opacity-50"
         >
           {saving ? "Saving..." : "Save Profile"}
         </button>
 
+        {/* Status */}
         {message && (
           <p className="mt-4 text-sm">
             {message}
