@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -100,6 +101,7 @@ export default async function Home() {
             ) : (
               <Link
                 href="/login"
+                prefetch={false}
                 className="border rounded-lg px-4 py-2 hover:bg-gray-100"
               >
                 Sign In
@@ -143,6 +145,7 @@ export default async function Home() {
             ) : (
               <Link
                 href="/login"
+                prefetch={false}
                 className="border rounded-lg px-6 py-3 hover:bg-gray-100"
               >
                 Sign In with Google

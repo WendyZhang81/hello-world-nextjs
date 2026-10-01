@@ -2,17 +2,39 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
-  const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get("code");
+  const { searchParams, origin } = new URL(request.url);
 
-  if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+  const code = searchParams.get("code");
 
-    if (!error) {
-      return NextResponse.redirect(`${requestUrl.origin}/profile`);
-    }
+  if (!code) {
+    return NextResponse.redirect(`${origin}/login`);
   }
 
-  return NextResponse.redirect(`${requestUrl.origin}/login`);
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (error) {
+    console.error("OAuth callback error:", error.message);
+
+    return NextResponse.redirect(
+      `${origin}/login?error=auth_callback`
+    );
+  }
+
+  // Vercel may sit behind a proxy, so use the original public host
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const isLocal = process.env.NODE_ENV === "development";
+
+  if (isLocal) {
+    return NextResponse.redirect(`${origin}/profile`);
+  }
+
+  if (forwardedHost) {
+    return NextResponse.redirect(
+      `https://${forwardedHost}/profile`
+    );
+  }
+
+  return NextResponse.redirect(`${origin}/profile`);
 }
