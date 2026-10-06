@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
@@ -56,6 +57,22 @@ export default async function Home() {
             >
               Jokes
             </Link>
+
+            <Link
+              href="/feed"
+              className="hover:text-gray-500"
+            >
+              Community
+            </Link>
+
+            {user && (
+              <Link
+                href="/generate"
+                className="hover:text-gray-500"
+              >
+                Generate
+              </Link>
+            )}
 
             {user ? (
               <>
@@ -115,32 +132,33 @@ export default async function Home() {
       <section className="max-w-6xl mx-auto px-6 py-24">
         <div className="max-w-3xl">
           <p className="text-sm font-medium text-gray-500 mb-4">
-            HUMOR, PROFILES & COMMUNITY
+            AI HUMOR & COMMUNITY
           </p>
 
           <h1 className="text-6xl font-bold tracking-tight mb-6">
-            Discover a little humor.
+            Discover, generate, and rate humor.
           </h1>
 
           <p className="text-xl text-gray-600 leading-relaxed mb-10">
-            Browse jokes, create your profile, and join a simple
-            community experience powered by Next.js and Supabase.
+            Explore jokes, generate AI-powered captions inspired by
+            college life and New York City, and vote on the funniest
+            creations from the community.
           </p>
 
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <Link
-              href="/jokes"
+              href="/feed"
               className="bg-black text-white rounded-lg px-6 py-3 hover:bg-gray-800"
             >
-              Explore Jokes
+              Explore Community
             </Link>
 
             {user ? (
               <Link
-                href="/profile"
+                href="/generate"
                 className="border rounded-lg px-6 py-3 hover:bg-gray-100"
               >
-                View My Profile
+                Generate a Caption
               </Link>
             ) : (
               <Link
@@ -148,7 +166,7 @@ export default async function Home() {
                 prefetch={false}
                 className="border rounded-lg px-6 py-3 hover:bg-gray-100"
               >
-                Sign In with Google
+                Sign In to Generate
               </Link>
             )}
           </div>
@@ -157,8 +175,49 @@ export default async function Home() {
 
       {/* Features */}
       <section className="bg-gray-50 border-y">
-        <div className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-3 gap-8">
-          {/* Jokes */}
+        <div className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+          {/* Community Feed */}
+          <div className="bg-white border rounded-2xl p-7">
+            <h2 className="text-2xl font-semibold mb-3">
+              Community Feed
+            </h2>
+
+            <p className="text-gray-600 mb-6">
+              Browse AI-generated captions and see what the community
+              thinks is actually funny.
+            </p>
+
+            <Link
+              href="/feed"
+              className="font-medium hover:underline"
+            >
+              Explore & vote →
+            </Link>
+          </div>
+
+          {/* AI Generator */}
+          <div className="bg-white border rounded-2xl p-7">
+            <h2 className="text-2xl font-semibold mb-3">
+              AI Generator
+            </h2>
+
+            <p className="text-gray-600 mb-6">
+              Turn a relatable Columbia or NYC moment into an
+              AI-generated humorous caption.
+            </p>
+
+            <Link
+              href={user ? "/generate" : "/login"}
+              className="font-medium hover:underline"
+            >
+              {user
+                ? "Generate caption →"
+                : "Sign in to generate →"}
+            </Link>
+          </div>
+
+          {/* Joke Library */}
           <div className="bg-white border rounded-2xl p-7">
             <h2 className="text-2xl font-semibold mb-3">
               Joke Library
@@ -190,35 +249,39 @@ export default async function Home() {
               href={user ? "/profile" : "/login"}
               className="font-medium hover:underline"
             >
-              {user ? "View profile →" : "Sign in to create profile →"}
-            </Link>
-          </div>
-
-          {/* Members */}
-          <div className="bg-white border rounded-2xl p-7">
-            <h2 className="text-2xl font-semibold mb-3">
-              Members Area
-            </h2>
-
-            <p className="text-gray-600 mb-6">
-              Access a private section available only to authenticated
-              members.
-            </p>
-
-            <Link
-              href={user ? "/members" : "/login"}
-              className="font-medium hover:underline"
-            >
-              {user ? "Enter members area →" : "Sign in to access →"}
+              {user
+                ? "View profile →"
+                : "Sign in to create profile →"}
             </Link>
           </div>
         </div>
       </section>
 
+      {/* Product idea */}
+      <section className="max-w-6xl mx-auto px-6 py-20">
+        <div className="max-w-3xl">
+          <p className="text-sm font-medium text-gray-500 mb-3">
+            BUILT FOR CAMPUS LIFE
+          </p>
+
+          <h2 className="text-3xl font-bold mb-4">
+            Humor inspired by the moments students actually live.
+          </h2>
+
+          <p className="text-gray-600 leading-relaxed">
+            From waiting for the 1 train to late nights in Butler,
+            users can turn everyday Columbia and NYC experiences into
+            AI-generated humor and let the community decide what lands.
+          </p>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="max-w-6xl mx-auto px-6 py-10 flex justify-between text-sm text-gray-500">
-        <p>Humor App</p>
-        <p>Built with Next.js and Supabase</p>
+      <footer className="border-t">
+        <div className="max-w-6xl mx-auto px-6 py-10 flex justify-between text-sm text-gray-500">
+          <p>Humor App</p>
+          <p>Built with Next.js, Supabase & Gemini</p>
+        </div>
       </footer>
     </main>
   );
