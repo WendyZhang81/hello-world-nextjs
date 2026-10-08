@@ -65,6 +65,14 @@ export default async function Home() {
               Community
             </Link>
 
+            {/* New Ranking Board link */}
+            <Link
+              href="/ranking"
+              className="hover:text-gray-500"
+            >
+              Rankings
+            </Link>
+
             {user && (
               <Link
                 href="/generate"
@@ -141,8 +149,8 @@ export default async function Home() {
 
           <p className="text-xl text-gray-600 leading-relaxed mb-10">
             Explore jokes, generate AI-powered captions inspired by
-            college life and New York City, and vote on the funniest
-            creations from the community.
+            college life and New York City, vote on the funniest
+            creations, and see which captions rise to the top.
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -151,6 +159,13 @@ export default async function Home() {
               className="bg-black text-white rounded-lg px-6 py-3 hover:bg-gray-800"
             >
               Explore Community
+            </Link>
+
+            <Link
+              href="/ranking"
+              className="border rounded-lg px-6 py-3 hover:bg-gray-100"
+            >
+              View Rankings
             </Link>
 
             {user ? (
@@ -175,7 +190,7 @@ export default async function Home() {
 
       {/* Features */}
       <section className="bg-gray-50 border-y">
-        <div className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {/* Community Feed */}
           <div className="bg-white border rounded-2xl p-7">
@@ -184,8 +199,8 @@ export default async function Home() {
             </h2>
 
             <p className="text-gray-600 mb-6">
-              Browse AI-generated captions and see what the community
-              thinks is actually funny.
+              Browse AI-generated captions and vote on what the
+              community thinks is actually funny.
             </p>
 
             <Link
@@ -193,6 +208,25 @@ export default async function Home() {
               className="font-medium hover:underline"
             >
               Explore & vote →
+            </Link>
+          </div>
+
+          {/* Ranking Board */}
+          <div className="bg-white border rounded-2xl p-7">
+            <h2 className="text-2xl font-semibold mb-3">
+              🏆 Ranking Board
+            </h2>
+
+            <p className="text-gray-600 mb-6">
+              See which AI-generated captions are ranked the funniest
+              by the community.
+            </p>
+
+            <Link
+              href="/ranking"
+              className="font-medium hover:underline"
+            >
+              View top captions →
             </Link>
           </div>
 
@@ -254,6 +288,25 @@ export default async function Home() {
                 : "Sign in to create profile →"}
             </Link>
           </div>
+
+          {/* Community Competition */}
+          <div className="bg-white border rounded-2xl p-7">
+            <h2 className="text-2xl font-semibold mb-3">
+              Community Competition
+            </h2>
+
+            <p className="text-gray-600 mb-6">
+              Generate better captions, earn community votes, and
+              compete for a spot on the leaderboard.
+            </p>
+
+            <Link
+              href="/ranking"
+              className="font-medium hover:underline"
+            >
+              See what's trending →
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -268,10 +321,16 @@ export default async function Home() {
             Humor inspired by the moments students actually live.
           </h2>
 
-          <p className="text-gray-600 leading-relaxed">
+          <p className="text-gray-600 leading-relaxed mb-6">
             From waiting for the 1 train to late nights in Butler,
             users can turn everyday Columbia and NYC experiences into
             AI-generated humor and let the community decide what lands.
+          </p>
+
+          <p className="text-gray-600 leading-relaxed">
+            Community voting powers the ranking board, allowing the
+            funniest captions to rise to the top and giving users a
+            reason to come back and see what is trending.
           </p>
         </div>
       </section>
